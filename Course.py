@@ -12,10 +12,10 @@ class Course:
 	def get_students_in_course (self):
 		data = {"enrollment_type" : "student"}
 		url = "https://canvas.instructure.com/api/v1/courses/" + self.id + "/users" + self.cred
-		r = requests.get (url, data)
+		r = requests.get (url, data=data)
 		return (json.loads (r.content))
 
-	def list_assignments ():
-		url = "https://canvas.instructure.com/api/v1/courses/" + self.id + "/assignments" + token
+	def list_assignments (self):
+		url = "https://canvas.instructure.com/api/v1/courses/" + self.id + "/assignments" + self.cred 
 		r = requests.get (url)
 		return (json.loads (r.content))

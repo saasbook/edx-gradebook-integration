@@ -2,8 +2,8 @@ import requests
 import json
 import csv
 
-import Course.py
-import Assignment.py
+import Course
+import Assignment
 
 #TODO: Error checking in request return values 
 '''
@@ -25,7 +25,7 @@ def get_course_list (course_filename):
 		courses.append (row)
 
 	for i in range (0, len (courses)):
-		c = Course (courses[i][0], courses[i][1])
+		c = Course.Course (courses[i][0], courses[i][1])
 		course_list.append (c)
 
 	f.close ()
@@ -44,8 +44,8 @@ def match_students_to_IDs (course):
 def create_assignment_list (assignment_data, course_id):
 	assignment_list = []
 
-	for name in range (1, len(info_list)):
-		assignment_list.append (Assignment (name, course_id))
+	for name in range (1, len(assignment_data)):
+		assignment_list.append (Assignment.Assignment (assignment_data[name], course_id))
 	
 	return assignment_list 
 
@@ -62,7 +62,7 @@ def parse_assignments_file (assignment_filename):
 
 	categories = tmp_arr[0]	
 	student_info = tmp_arr [1:]
-	assignment_list = create_assignment_list (categories, assignment_filename[:-3])
+	assignment_list = create_assignment_list (categories, assignment_filename[:-4])
 
 	f.close ()
 	return assignment_list, student_info
@@ -71,17 +71,27 @@ def update_bcourses (course):
 	assignment_filename = course.id + ".csv"
 	student_map = match_students_to_IDs (course) 
 	assignments, students = parse_assignments_file (assignment_filename)
-	assignment_list = course.list_assignments ()
-
+	c = 0
+	print (assignments)
 	for i in range (0, len (students)):
-		for j in range (1, len (students[i])):
+		for j in range (1, len (students[i]) - 1):
 			#TODO: find what categories in the grade file are not assignments e.g "Quiz Average"	
+			assignment_list = course.list_assignments ()
 			for assignment in assignment_list: 
 				if assignment ['name'] == assignments[j].name:
-					assignments[j].put_grade (students[i][j])
-					continue
-			assignments[j].post ()
-			assignments[j].put_grade (students[i][j] + "%")
+					print ("only putting", assignments[j].name)
+					print (students[i][j])
+					print (student_map [students[i][0]])
+					assignments[j].put_grade (students[i][j] + "%", student_map [students[i][0]], course.cred)
+					c = 1
+					break	
+				else: 
+					c = 0
+
+			if (c != 1):
+				print ("have to post", assignments[j].name)
+				assignments[j].post (course.cred)
+				assignments[j].put_grade (students[i][j] + "%", student_map [students[i][0]], course.cred)
 				
 def main():
 	course_filename= "courses.csv" #course_IDs + credentials
