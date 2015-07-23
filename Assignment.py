@@ -14,6 +14,9 @@ class Assignment:
 		asg_obj = json.loads (r.content)
 		self.id = asg_obj["id"]
 
+	def set_id (self, id):
+		self.id = id		
+
 	def put_grade (self, grade, student_id, token):
 		url = "https://canvas.instructure.com/api/v1/courses/" + self.course_id + "/assignments/" + str(self.id) + "/submissions/" + str(student_id) + token
 		data = {"submission[posted_grade]" : grade}

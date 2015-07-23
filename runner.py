@@ -72,24 +72,21 @@ def update_bcourses (course):
 	student_map = match_students_to_IDs (course) 
 	assignments, students = parse_assignments_file (assignment_filename)
 	c = 0
-	print (assignments)
 	for i in range (0, len (students)):
-		for j in range (1, len (students[i]) - 1):
+		for j in range (0, len (students[i]) - 1):
 			#TODO: find what categories in the grade file are not assignments e.g "Quiz Average"	
 			assignment_list = course.list_assignments ()
+			print (assignments[j].name)
 			for assignment in assignment_list: 
 				if assignment ['name'] == assignments[j].name:
-					print ("only putting", assignments[j].name)
-					print (students[i][j])
-					print (student_map [students[i][0]])
-					assignments[j].put_grade (students[i][j] + "%", student_map [students[i][0]], course.cred)
+					assignments[j].set_id (assignment["id"])
+					assignments[j].put_grade (students[i][j + 1] + "%", student_map [students[i][0]], course.cred)
 					c = 1
 					break	
 				else: 
 					c = 0
 
 			if (c != 1):
-				print ("have to post", assignments[j].name)
 				assignments[j].post (course.cred)
 				assignments[j].put_grade (students[i][j] + "%", student_map [students[i][0]], course.cred)
 				
